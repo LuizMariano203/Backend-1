@@ -6,18 +6,12 @@ import AppError from '@shared/errors/AppError';
 
 import IHashProvider from '@shared/container/providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
+import IUpdateUserDTO from '../dtos/IUpdateUserDTO';
 
-interface IRequest {
-  name: string;
-  birthday: string;
-  email: string;
-  cpf: string;
-  phone: string;
-  password: string;
-}
+type IRequest = IUpdateUserDTO
 
 @injectable()
-export default class CreateUserService {
+export default class UpdateUserService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
@@ -28,11 +22,18 @@ export default class CreateUserService {
   ) { }
 
   public async execute({
-    name, cpf, birthday, email, phone, password,
-  }: IRequest): Promise<Users> {
+    id,
+    user: {
+      name, cpf, birthday, email, phone, password,
+    },
+  }: IRequest): Promise<Omit<Users, 'password'>> {
+    const user = await this.usersRepository.findOne(id);
+
+    if (!user) throw new AppError('User not found', 404);
+
     const userAlreadyExists = await this.usersRepository.findByEmailPhoneOrCpf(cpf);
 
-    if (userAlreadyExists) throw new AppError('cpf already exists');
+    if (userAlreadyExists && userAlreadyExists.id !== id) throw new AppError('cpf already exists');
 
     if (name === '') { throw new AppError('Name area is empty'); }
 
@@ -45,23 +46,21 @@ export default class CreateUserService {
     if (email === '') { throw new AppError('Email area is empty'); }
 
     if (password === '') { throw new AppError('Password area is empty'); }
-    
 
     const hashedPassword = await this.hashProvider.generateHash(password);
 
-    const user = this.usersRepository.create({
-     
+    const userUpdated = this.usersRepository.update({
+      id,
+      user: {
         name,
-      birthday,
-      email,
-      cpf,
-      password: hashedPassword,
-      phone,
-
+        birthday,
+        email,
+        cpf,
+        password: hashedPassword,
+        phone,
+      },
     });
-
-    
-
-    return user;
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 }

@@ -1,8 +1,9 @@
 model Users {
   id         String   @id @default(uuid())
-  name       String   @unique
+  name       String  
+  birthday   String
   email      String
-  cpf        String
+  cpf        String   @unique
   phone      String
   password   String
   created_at DateTime @default(now())
