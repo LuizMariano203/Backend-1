@@ -31,7 +31,7 @@ export default class UpdateUserService {
 
     if (!user) throw new AppError('User not found', 404);
 
-    const userAlreadyExists = await this.usersRepository.findByEmailPhoneOrCpf(cpf);
+    const userAlreadyExists = await this.usersRepository.findByCpf(cpf);
 
     if (userAlreadyExists && userAlreadyExists.id !== id) throw new AppError('cpf already exists');
 

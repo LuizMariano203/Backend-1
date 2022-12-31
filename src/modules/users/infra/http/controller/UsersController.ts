@@ -8,7 +8,8 @@ import DeleteUserService from '@modules/users/services/DeleteUserService';
 import UpdateUserService from '@modules/users/services/UpdateUserService';
 
 export default class UserController {
-  public async create(req: Request, res: Response): Promise<Response> {
+  
+  public async create(req:Request, res:Response): Promise<Response> {
     const {
       name,
       birthday,
@@ -17,6 +18,8 @@ export default class UserController {
       phone,
       password,
     } = req.body;
+    
+   console.log(cpf)
 
     const createUser = container.resolve(CreateUserService);
 

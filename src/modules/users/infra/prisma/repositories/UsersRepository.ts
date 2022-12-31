@@ -6,7 +6,7 @@ import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 import IUpdateUserDTO from '@modules/users/dtos/IUpdateUserDTO';
 
 export default class UsersRepository implements IUsersRepository {
-  private ormRepository: Prisma.UsersDelegate<Prisma.RejectOnNotFound | Prisma.RejectOnNotFound | undefined>
+  private ormRepository: Prisma.UsersDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>
 
   constructor() {
     this.ormRepository = prisma.users;
@@ -28,16 +28,17 @@ export default class UsersRepository implements IUsersRepository {
     return user;
   }
 
-  public async findByEmailPhoneOrCpf(cpf: string): Promise<Users | null> {
+  public async findByCpf(cpf: string): Promise< Users | null> {
+    
     const user = await this.ormRepository.findFirst({
       where: { cpf },
     });
-
+    
     return user;
   }
 
-  public async create(data: ICreateUserDTO): Promise<Users> {
-    const user = await this.ormRepository.create({ data });
+  public async create(data: ICreateUserDTO): Promise<Users > {
+    const user = await this.ormRepository.create( {data} )
 
     return user;
   }

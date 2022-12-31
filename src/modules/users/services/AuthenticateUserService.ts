@@ -1,10 +1,10 @@
 import { inject, injectable } from 'tsyringe';
-import { sign } from 'jsonwebtoken';
+import { sign, Secret } from 'jsonwebtoken';
 
 import { Users } from '@prisma/client';
 
 import AppError from '@shared/errors/AppError';
-import authConfig from '@config/auth';
+import auth from '@config/auth';
 
 import IHashProvider from '@shared/container/providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
@@ -37,9 +37,9 @@ export default class AuthenticateUserService {
       throw new AppError('Incorrect email/password combination', 401);
     }
 
-    const { secret, expiresIn } = authConfig.jwt;
+    const { secret, expiresIn } = auth.jwt;
 
-    const token = sign({}, secret, {
+    const token = sign({}, secret as Secret, {
       subject: user.id,
       expiresIn,
     });

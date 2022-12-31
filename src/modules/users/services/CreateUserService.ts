@@ -1,19 +1,21 @@
 import { inject, injectable } from 'tsyringe';
 
+import ICreateUserDTO from '../dtos/ICreateUserDTO';
 import { Users } from '@prisma/client';
 
 import AppError from '@shared/errors/AppError';
 
 import IHashProvider from '@shared/container/providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
+import { hash } from 'bcryptjs';
 
-interface IRequest {
-  name: string;
-  birthday: string;
-  email: string;
-  cpf: string;
-  phone: string;
-  password: string;
+interface data {
+  name: string,
+  birthday: string,
+  email: string,
+  cpf: string,
+  phone: string,
+  password: string,
 }
 
 @injectable()
@@ -28,11 +30,15 @@ export default class CreateUserService {
   ) { }
 
   public async execute({
-    name, cpf, birthday, email, phone, password,
-  }: IRequest): Promise<Users> {
-    const userAlreadyExists = await this.usersRepository.findByEmailPhoneOrCpf(cpf);
+    name, birthday, cpf, email, phone, password,
+  }: ICreateUserDTO): Promise<Users> {
+    
+    
 
-    if (userAlreadyExists) throw new AppError('cpf already exists');
+    const userAlreadyExists = await this.usersRepository.findByCpf(cpf);
+  
+
+    if (userAlreadyExists ) throw new AppError('cpf already exists');
 
     if (name === '') { throw new AppError('Name area is empty'); }
 
@@ -47,11 +53,11 @@ export default class CreateUserService {
     if (password === '') { throw new AppError('Password area is empty'); }
     
 
-    const hashedPassword = await this.hashProvider.generateHash(password);
+    const hashedPassword = await hash(password, 8);
 
-    const user = this.usersRepository.create({
+    const user = await this.usersRepository.create({
      
-        name,
+      name,
       birthday,
       email,
       cpf,
@@ -59,6 +65,7 @@ export default class CreateUserService {
       phone,
 
     });
+    console.log(user.cpf)
 
     
 

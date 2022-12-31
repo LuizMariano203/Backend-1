@@ -1,7 +1,8 @@
 -- CreateTable
-CREATE TABLE "Users" (
+CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "birthday" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "cpf" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
@@ -9,8 +10,8 @@ CREATE TABLE "Users" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Users_name_key" ON "Users"("name");
+CREATE UNIQUE INDEX "users_cpf_key" ON "users"("cpf");

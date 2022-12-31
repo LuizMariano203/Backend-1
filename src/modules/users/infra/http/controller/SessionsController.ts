@@ -4,11 +4,12 @@ import { container } from 'tsyringe';
 import AuthenticateUserService from '@modules/users/services/AuthenticateUserService';
 
 export default class SessionsController {
-  public async create(req: Request, res: Response): Promise<Response> {
+  public async create(req: Request, res: Response): Promise<Response| null> {
     const {
       email,
       password,
     } = req.body;
+    console.log(password);
 
     const authenticateUser = container.resolve(AuthenticateUserService);
 
