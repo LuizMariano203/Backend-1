@@ -1,0 +1,27 @@
+model Piu {
+    id           String         @id @default(uuid())
+    provider_id  String
+    text         String
+    provider     Users          @relation(fields: [provider_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    created_at   DateTime       @default(now())
+    updated_at   DateTime       @updatedAt
+    LikeRelation LikeRelation[]
+
+    @@map("pius")
+}
+
+model Users {
+    id           String         @id @default(uuid())
+    pius         Piu[]
+    LikeRelation LikeRelation[]
+}
+
+model LikeRelation {
+    id      String @id @default(uuid())
+    piu     Piu    @relation(fields: [piuId], references: [id])
+    user    Users  @relation(fields: [usersId], references: [id])
+    piuId   String
+    usersId String
+
+    @@map("likeRelation")
+}

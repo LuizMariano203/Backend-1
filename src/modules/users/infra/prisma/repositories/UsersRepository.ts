@@ -36,6 +36,15 @@ export default class UsersRepository implements IUsersRepository {
     
     return user;
   }
+  
+  public async findById(id: string): Promise< Users | null> {
+    
+    const user = await this.ormRepository.findFirst({
+      where: { id },
+    });
+    
+    return user;
+  }
 
   public async create(data: ICreateUserDTO): Promise<Users > {
     const user = await this.ormRepository.create( {data} )
@@ -44,7 +53,7 @@ export default class UsersRepository implements IUsersRepository {
   }
 
   public async findAll():Promise<Users[]> {
-    const users = await this.ormRepository.findMany();
+    const users = await this.ormRepository.findMany({include:{LikeRelation:true}});
     return users;
   }
 

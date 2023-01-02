@@ -9,15 +9,6 @@ import IHashProvider from '@shared/container/providers/HashProvider/models/IHash
 import IUsersRepository from '../repositories/IUsersRepository';
 import { hash } from 'bcryptjs';
 
-interface data {
-  name: string,
-  birthday: string,
-  email: string,
-  cpf: string,
-  phone: string,
-  password: string,
-}
-
 @injectable()
 export default class CreateUserService {
   constructor(
@@ -33,18 +24,15 @@ export default class CreateUserService {
     name, birthday, cpf, email, phone, password,
   }: ICreateUserDTO): Promise<Users> {
     
-    
+    if (cpf === '') { throw new AppError('CPF area is empty'); }
 
     const userAlreadyExists = await this.usersRepository.findByCpf(cpf);
-  
 
     if (userAlreadyExists ) throw new AppError('cpf already exists');
 
     if (name === '') { throw new AppError('Name area is empty'); }
 
     if (birthday === '') { throw new AppError('Birthday area is empty'); }
-
-    if (cpf === '') { throw new AppError('CPF area is empty'); }
 
     if (phone === '') { throw new AppError('Number area is empty'); }
 
@@ -65,7 +53,7 @@ export default class CreateUserService {
       phone,
 
     });
-    console.log(user.cpf)
+    
 
     
 

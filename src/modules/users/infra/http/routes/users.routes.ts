@@ -12,7 +12,7 @@ usersRouter.get('/', usersController.showAll);
 
 usersRouter.get('/:id', usersController.showOne);
 
-usersRouter.delete('/:id', usersController.deleteUser);
+usersRouter.delete('/delete', usersController.deleteUser);
 
 usersRouter.put('/:id', usersController.update);
 

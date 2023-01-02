@@ -9,12 +9,13 @@ export default class SessionsController {
       email,
       password,
     } = req.body;
-    console.log(password);
+    
 
     const authenticateUser = container.resolve(AuthenticateUserService);
 
     const { user, token } = await authenticateUser.execute({ email, password });
 
-    return res.json({ user, token });
+     const {password: _, ...userWithoutPassword }= user
+    return res.json({ userWithoutPassword, token });
   }
 }

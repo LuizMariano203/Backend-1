@@ -5,6 +5,7 @@ import IUpdateUserDTO from '../dtos/IUpdateUserDTO';
 interface IUsersRepository {
   findByEmailWithRelations(email: string): Promise<Users | null>;
   findByCpf(cpf: string): Promise< Users | null>;
+  findById(id: string): Promise< Users | null>;
   create(data: ICreateUserDTO): Promise<Users>;
   findAll():Promise<Users[]>;
   findOne(id:string):Promise<Users | null>;

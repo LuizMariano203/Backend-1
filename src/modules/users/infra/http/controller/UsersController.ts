@@ -6,6 +6,9 @@ import ShowAllUserService from '@modules/users/services/ShowAllUsersService';
 import ShowOneUserService from '@modules/users/services/ShowOneUserService';
 import DeleteUserService from '@modules/users/services/DeleteUserService';
 import UpdateUserService from '@modules/users/services/UpdateUserService';
+import AppError from '@shared/errors/AppError';
+import { JwtPayload, Secret, verify } from 'jsonwebtoken';
+import auth from '@config/auth';
 
 export default class UserController {
   
@@ -19,7 +22,7 @@ export default class UserController {
       password,
     } = req.body;
     
-   console.log(cpf)
+ 
 
     const createUser = container.resolve(CreateUserService);
 
@@ -32,7 +35,8 @@ export default class UserController {
       password,
     });
 
-    return res.status(201).json(user);
+    const { password: _, ...userWithoutPassword} = user;
+    return res.status(201).json(userWithoutPassword);
   }
 
   public async showAll(req: Request, res:Response):Promise<Response> {
@@ -51,9 +55,33 @@ export default class UserController {
   }
 
   public async deleteUser(req: Request, res:Response):Promise<Response> {
-    const { id } = req.params;
+  
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader){
+        throw new AppError('JWT token is missing', 401);
+    }
+
+    const [, token]= authHeader.split(' ');
+
+    try{ 
+        const decoded = verify(token, auth.jwt.secret as Secret);
+
+        const {sub} = decoded as JwtPayload;
+
+        req.user = {
+            id: sub as string ,
+        }
+        
+       console.log(req.user.id);
+        
+    }   catch{
+        throw new AppError('Invalid JWT token', 401)
+    }
+
+
     const deleteUser = container.resolve(DeleteUserService);
-    await deleteUser.execute(id);
+    await deleteUser.execute(req.user.id);
 
     return res.json();
   }
